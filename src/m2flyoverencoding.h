@@ -212,7 +212,7 @@ const std::unordered_map<char32_t, uint16_t> m2flyoverencoding = {
     {U'以', 0x80D0},
     {U'引', 0x80D1},
     {U'飲', 0x80D2},
-    {U'僅', 0x80D3},
+    {U'運', 0x80D3},
     {U'遠', 0x80D4},
     {U'王', 0x80D5},
     {U'音', 0x80D6},
