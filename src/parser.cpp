@@ -330,6 +330,10 @@ Expression* Parser::expression()
 		return boundedexpr();
 	if(accept(insertbinsym))
 		return insertbinexpr();
+	if(accept(flyoversym)) {
+		int line = last.line;
+		return new FlyoverExpr(line, expression(), error);
+	}
 
 	int line = last.line;
 	Expression* exp1 = factor();

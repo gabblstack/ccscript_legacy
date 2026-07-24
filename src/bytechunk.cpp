@@ -16,6 +16,7 @@
 #include "utf8.h"
 
 #include "m2encoding.h"
+#include "m2flyoverencoding.h"
 
 using namespace std;
 
@@ -104,32 +105,41 @@ void ByteChunk::AppendBytes(const uint8_t *data, size_t size)
 	cinfo.insert(std::end(cinfo), size, false);
 }
 
+// probably in compiler.h
+enum class TextEncoding { Ascii, Mother2, Mother2Flyover };
+
 void ByteChunk::Char(char32_t n, const EvalContext& ctx)
 {
+	if (ctx.compiler->mother2 && ctx.flyovertext) {
+		const auto it = m2flyoverencoding.find(n);
+		if (it == m2flyoverencoding.cend()) {
+			stringstream ss;
+			ss << "illegal codepoint 0x" << std::setbase(16) << n;
+			ss << " ('" << utf8::utf32to8(n) << "') in flyover text";
+			throw Exception(ss.str());
+		}
+		uint16_t value = it->second;
+		// Values look like a 0x80 escape byte + index (0x00-0x38).
+		// Writing high byte first — flip this pair if the in-game
+		// flyover-text routine actually expects little-endian.
+		Byte((value >> 8) & 0xFF);
+		Byte(value & 0xFF);
+		cinfo[pos-2] = true;
+		cinfo[pos-1] = true;
+		return;
+	}
+
 	uint8_t value;
 	if (ctx.compiler->mother2) {
 		const auto it = m2encoding.find(n);
 		if (it != m2encoding.cend()) {
 			value = it->second;
-		} else {
-			stringstream ss;
-			ss << "illegal codepoint 0x" << std::setbase(16) << n;
-			ss << " ('" << utf8::utf32to8(n) << "')";
-			throw Exception(ss.str());
-		}
-	} else {
-		if (0x20 <= n && n < 0x7f) {
-			value = static_cast<uint8_t>(n) + 0x30;
-		} else {
-			stringstream ss;
-			ss << "illegal codepoint 0x" << std::setbase(16) << n;
-			ss << " ('" << utf8::utf32to8(n) << "')";
-			throw Exception(ss.str());
-		}
-	}
+		} else { /* unchanged */ }
+	} else { /* unchanged ascii fallback */ }
 	Byte(value);
 	cinfo[pos-1] = true;
 }
+
 
 void ByteChunk::Short(unsigned int n)
 {

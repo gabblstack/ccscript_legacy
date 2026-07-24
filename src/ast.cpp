@@ -21,6 +21,31 @@
 
 using namespace std;
 
+void FlyoverExpr::PreTypecheck(SymbolTable* root, bool atroot)
+{
+	expr->PreTypecheck(root, atroot);
+}
+
+Value FlyoverExpr::Evaluate(SymbolTable* scope, EvalContext& context, bool asbool)
+{
+	// Scope override; must do this for every expression that might contain an identifier
+	if(this->scope != NULL)
+		scope = this->scope;
+
+	bool saved = context.flyovertext;
+	context.flyovertext = true;
+
+	Value result = expr->Evaluate(scope, context, asbool);
+
+	context.flyovertext = saved;
+
+	return result;
+}
+
+string FlyoverExpr::ToString(const string& indent, bool suppress) const {
+	return "flyover " + expr->ToString(indent);
+}
+
 /*
  * Context methods
  */

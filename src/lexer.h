@@ -19,6 +19,7 @@ typedef enum {
 	rightbracket, period, colon, comma, equals,
 	importsym, insertbinsym,
 	countsym, setcountsym,
+	flyoversym,		// flyover
 	errorsym
 } symbol;
 
