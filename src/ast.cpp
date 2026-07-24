@@ -21,31 +21,6 @@
 
 using namespace std;
 
-void FlyoverExpr::PreTypecheck(SymbolTable* root, bool atroot)
-{
-	expr->PreTypecheck(root, atroot);
-}
-
-Value FlyoverExpr::Evaluate(SymbolTable* scope, EvalContext& context, bool asbool)
-{
-	// Scope override; must do this for every expression that might contain an identifier
-	if(this->scope != NULL)
-		scope = this->scope;
-
-	bool saved = context.flyovertext;
-	context.flyovertext = true;
-
-	Value result = expr->Evaluate(scope, context, asbool);
-
-	context.flyovertext = saved;
-
-	return result;
-}
-
-string FlyoverExpr::ToString(const string& indent, bool suppress) const {
-	return "flyover " + expr->ToString(indent);
-}
-
 /*
  * Context methods
  */
@@ -209,6 +184,11 @@ void OrExpr::PreTypecheck(SymbolTable* root, bool atroot)
 void NotExpr::PreTypecheck(SymbolTable* root, bool atroot)
 {
 	a->PreTypecheck(root, atroot);
+}
+
+void FlyoverExpr::PreTypecheck(SymbolTable* root, bool atroot)
+{
+	expr->PreTypecheck(root, atroot);
 }
 
 void FlagExpr::PreTypecheck(SymbolTable* root, bool atroot)
@@ -815,6 +795,22 @@ Value NotExpr::Evaluate(SymbolTable *scope, EvalContext& context, bool asbool)
 	return Value(value);
 }
 
+Value FlyoverExpr::Evaluate(SymbolTable* scope, EvalContext& context, bool asbool)
+{
+	// Scope override; must do this for every expression that might contain an identifier
+	if(this->scope != NULL)
+		scope = this->scope;
+
+	bool saved = context.flyovertext;
+	context.flyovertext = true;
+
+	Value result = expr->Evaluate(scope, context, asbool);
+
+	context.flyovertext = saved;
+
+	return result;
+}
+
 Value FlagExpr::Evaluate(SymbolTable* scope, EvalContext& context, bool asbool)
 {
 	// When evaluating as a boolean, we want to use the "load flag" command, 07.
@@ -1060,6 +1056,10 @@ string ExprStmt::ToString(const string& indent, bool suppress) const {
 	if(suppress)
 		return expr->ToString(indent);
 	return indent + expr->ToString(indent);
+}
+
+string FlyoverExpr::ToString(const string& indent, bool suppress) const {
+	return "flyover " + expr->ToString(indent);
 }
 
 string FlagExpr::ToString(const string&indent, bool suppress) const {

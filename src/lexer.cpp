@@ -42,7 +42,7 @@ void Lexer::Init()
 	AddKeyword("insertbin", insertbinsym);
 	AddKeyword("count", countsym);
 	AddKeyword("setcount", setcountsym);
-	AddKeyword("flyover", flyoversym);   // NEW
+	AddKeyword("flyover", flyoversym);
 	line = 1;
 	column = 0;
 	currentsym = errorsym;
@@ -105,7 +105,7 @@ void Lexer::AddKeyword(const string& kw, symbol sym)
 		case insertbinsym: return "insertbin";
 		case countsym: return "count";
 		case setcountsym: return "setcount";
-		case flyoversym: return "flyover";   // flyover
+		case flyoversym: return "flyover";
 		default: return "INVALID SYMBOL";
 	}
 }

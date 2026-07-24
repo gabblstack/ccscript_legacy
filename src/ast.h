@@ -25,7 +25,7 @@ typedef enum {
 	menuexpr,
 	intexpr,
 	stringexpr,
-	flyoverexpr, //flyover
+	flyoverexpr,
 	flagexpr,
 	andexpr,
 	orexpr,
@@ -67,8 +67,7 @@ public:
 	int line;				// Current line being executed
 
 	bool norefs;			// Do not register any references
-	bool flyovertext;   // NEW — when true, string data compiles through
-	                    // the flyover text table instead of the normal one
+	bool flyovertext;		// Compile string data using the flyover text table
 
 	//bool isboolean;		// whether this node is being evaluated as part of a boolean expression
 							// (REMOVED: actually, this really works best as a parameter with a
@@ -89,6 +88,7 @@ public:
 		labels = NULL;
 		output = NULL;
 		norefs = false;
+		flyovertext = false;
 	}
 };
 
@@ -545,26 +545,6 @@ public:
 
 
 /*
- * An integer that should be interpreted as an event flag
- */
-class FlagExpr : public Expression
-{
-private:
-	//int flag;
-	Expression* expr;
-public:
-	FlagExpr(int line, Expression* expr, ErrorReceiver* e = NULL)
-		: Expression(line, e), expr(expr)
-	{ }
-	nodetype GetType() const { return flagexpr; }
-
-	// defined in ast.cpp
-	void PreTypecheck(SymbolTable* root, bool atroot);
-	Value Evaluate(SymbolTable* scope, EvalContext& context, bool asbool=false);
-	std::string ToString(const std::string& indent, bool suppress=false) const;
-};
-
-/*
  * Wraps an expression, forcing any string data produced within it to be
  * compiled using the flyover text table instead of the normal one.
  */
@@ -580,6 +560,27 @@ public:
 		delete expr;
 	}
 	nodetype GetType() const { return flyoverexpr; }
+
+	// defined in ast.cpp
+	void PreTypecheck(SymbolTable* root, bool atroot);
+	Value Evaluate(SymbolTable* scope, EvalContext& context, bool asbool=false);
+	std::string ToString(const std::string& indent, bool suppress=false) const;
+};
+
+
+/*
+ * An integer that should be interpreted as an event flag
+ */
+class FlagExpr : public Expression
+{
+private:
+	//int flag;
+	Expression* expr;
+public:
+	FlagExpr(int line, Expression* expr, ErrorReceiver* e = NULL)
+		: Expression(line, e), expr(expr)
+	{ }
+	nodetype GetType() const { return flagexpr; }
 
 	// defined in ast.cpp
 	void PreTypecheck(SymbolTable* root, bool atroot);
