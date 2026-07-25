@@ -14,7 +14,7 @@ std::string util::FindIncludedFile(const std::string& name, const std::string& f
 	// First, try in the provided file directory.
 	auto base = fpFiledir / fpName;
 	if( fs::exists( base ) ) {
-		return ConvertFromNativeString(base.string());
+		return base.string();
 	}
 
 	// Next, try in the compilation working directory
@@ -26,7 +26,7 @@ std::string util::FindIncludedFile(const std::string& name, const std::string& f
 	if(!libdir.empty()) {
 		auto libpath = fpLibdir / fpName;
 		if( fs::exists(libpath) ) {
-			return ConvertFromNativeString(libpath.string());
+			return libpath.string();
 		}
 	}
 	return std::string();
