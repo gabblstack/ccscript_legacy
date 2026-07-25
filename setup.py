@@ -12,6 +12,8 @@ extra_link_args = []
 
 if platform.system() == "Linux" or platform.system() == "Darwin":
     extra_compile_args = ["-std=c++17"]
+elif platform.system() == "Windows":
+  extra_compile_args = ["/source-charset:utf-8"]
 
 setup(name="ccscript",
     version="1.501",
