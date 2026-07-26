@@ -1,7 +1,7 @@
 ﻿#include <unordered_map>
 
 const std::unordered_map<char32_t, uint8_t> m2encoding = {
-    {U' ', 0x20},
+    {U'　', 0x20},
     {U'$', 0x23},
     // 24 is the "zero cents" (00_) character.
     {U'ー', 0x25},
